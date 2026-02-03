@@ -1,0 +1,6 @@
+/.venv
+.env
+.envrc
+__pycache__/
+test_client.py
+mcp_openai_client.py
