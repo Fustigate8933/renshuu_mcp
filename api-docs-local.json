@@ -1,0 +1,2245 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "renshuu API",
+    "version": "1.0.0",
+    "description": "API for registered users to access and adjust dictionary and personal data from renshuu. API key can be found in the settings panel of renshuu. Discussion on this API is https://www.renshuu.org/forums/topics/11824/Interested_in_working_with_a_renshuu_API%3F"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000/api/v1",
+      "description": "Local proxy server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "List": {
+        "type": "object",
+        "properties": {
+          "list_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "example": "Michael's cool words"
+          },
+          "description": {
+            "type": "string",
+            "example": "Words picked up from living in Japan"
+          },
+          "termtype": {
+            "type": "string",
+            "enum": [
+              "vocab",
+              "kanji",
+              "grammar",
+              "semt"
+            ]
+          },
+          "num_terms": {
+            "type": "integer",
+            "example": 20
+          },
+          "privacy": {
+            "type": "string",
+            "enum": [
+              "public",
+              "private"
+            ]
+          },
+          "contents": {
+            "type": "object",
+            "properties": {
+              "result_count": {
+                "type": "integer",
+                "example": 1
+              },
+              "total_pg": {
+                "type": "integer",
+                "example": 2
+              },
+              "per_pg": {
+                "type": "integer",
+                "example": 50
+              },
+              "pg": {
+                "type": "integer",
+                "example": 1
+              },
+              "group": {
+                "type": "string",
+                "example": "all"
+              },
+              "terms": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Word"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Kanji"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Grammar"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SimpleSentence"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "SimpleSentence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": 1000
+          },
+          "japanese": {
+            "type": "string",
+            "example": "\u30ab\u30aa\u3061\u3083\u3093\u306f\u53ef\u611b\u3044\u3067\u3059\u3002"
+          },
+          "hiragana": {
+            "type": "string",
+            "example": "\u30ab\u30aa\u3061\u3083\u3093\u306f\u304b\u308f\u3044\u3044\u3067\u3059\u3002"
+          },
+          "meaning": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "en": "Kao-chan is cute."
+            }
+          }
+        }
+      },
+      "Schedule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": 1000
+          },
+          "name": {
+            "type": "string",
+            "example": "Japanese Basics"
+          },
+          "is_frozen": {
+            "type": "integer",
+            "example": 0
+          },
+          "today": {
+            "type": "object",
+            "properties": {
+              "review": {
+                "type": "integer",
+                "example": 10
+              },
+              "new": {
+                "type": "integer",
+                "example": 20
+              }
+            }
+          },
+          "upcoming": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "days_in_future": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "terms_to_review": {
+                  "type": "integer",
+                  "example": 10
+                }
+              }
+            }
+          },
+          "terms": {
+            "type": "object",
+            "properties": {
+              "total_count": {
+                "type": "integer",
+                "example": 1000
+              },
+              "studied_count": {
+                "type": "integer",
+                "example": 1000
+              },
+              "unstudied_count": {
+                "type": "integer",
+                "example": 1000
+              },
+              "hidden_count": {
+                "type": "integer",
+                "example": 1000
+              }
+            }
+          },
+          "new_terms": {
+            "type": "object",
+            "properties": {
+              "today_count": {
+                "type": "integer",
+                "example": 1000,
+                "description": "New terms learned today"
+              },
+              "rolling_week_count": {
+                "type": "integer",
+                "example": 1000,
+                "description": "New terms learned in the last 7 days"
+              }
+            }
+          }
+        }
+      },
+      "Presences": {
+        "type": "object",
+        "properties": {
+          "scheds": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sched_id": {
+                  "type": "integer",
+                  "example": 1000
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Japanese Basics Schedule"
+                },
+                "hasWord": {
+                  "type": "integer",
+                  "example": 0
+                }
+              }
+            }
+          },
+          "lists": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "list_id": {
+                  "type": "integer",
+                  "example": 1000
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Lesson 1"
+                },
+                "set_name": {
+                  "type": "string",
+                  "example": "Japanese Basics"
+                },
+                "hasWord": {
+                  "type": "integer",
+                  "example": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "TermUserData": {
+        "type": "object",
+        "properties": {
+          "correct_count": {
+            "type": "integer",
+            "example": 10
+          },
+          "missed_count": {
+            "type": "integer",
+            "example": 2
+          },
+          "mastery_avg_perc": {
+            "type": "integer",
+            "example": 70
+          },
+          "study_vectors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "correct_count": {
+                  "type": "integer"
+                },
+                "missed_count": {
+                  "type": "integer"
+                },
+                "mastery_perc": {
+                  "type": "integer"
+                },
+                "last_quizzed": {
+                  "type": "string"
+                },
+                "next_quiz": {
+                  "type": "string"
+                }
+              }
+            },
+            "example": {
+              "Kanji > Kana": {
+                "name": "Kanji > Kana",
+                "correct_count": 5,
+                "missed_count": 1,
+                "mastery_perc": 63,
+                "last_quizzed": "Not yet",
+                "next_quiz": "2024/03/18"
+              },
+              "Kana > Kanji": {
+                "name": "Kana > Kanji",
+                "correct_count": 3,
+                "missed_count": 8,
+                "mastery_perc": 63,
+                "last_quizzed": "Not yet",
+                "next_quiz": "2024/03/23"
+              }
+            }
+          }
+        }
+      },
+      "Grammar": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "6"
+          },
+          "title_english": {
+            "type": "string",
+            "example": "While"
+          },
+          "title_japanese": {
+            "type": "string",
+            "example": "\u306a\u304c\u3089"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://renshuu.org/grammar/6"
+          },
+          "meaning": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "en": "While [A]; during the condition [A]"
+            }
+          },
+          "meaning_long": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "en": "Both actions [A] and [B] are occuring at the same time. Emphasis is placed on the second action ([B]) in the sentence."
+            }
+          },
+          "presence": {
+            "$ref": "#/components/schemas/Presences"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/TermUserData"
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "japanese": {
+                  "type": "string",
+                  "example": "\u672c\u3092__\u8aad\u307f\u306a\u304c\u3089__\u5f7c\u5973\u3092\u5f85\u3061\u307e\u3059\u3002"
+                },
+                "hiragana": {
+                  "type": "string",
+                  "example": "\u307b\u3093\u3000\u3092\u3000__\u3088\u307f\u306a\u304c\u3089__\u3000\u304b\u306e\u3058\u3087\u3000\u3092\u3000\u307e\u3061\u307e\u3059\u3000\u3002"
+                },
+                "meanings": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "example": {
+                    "en": "I __wait for her while__ I read a book."
+                  }
+                }
+              }
+            }
+          },
+          "construct": {
+            "type": "string",
+            "example": "https://www.renshuu.org/gimages/construct_5.png?v=2",
+            "description": "Image of construction pattern(s), suitable for discord embeds"
+          }
+        }
+      },
+      "SimpleKanji": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1419"
+          },
+          "kanji": {
+            "type": "string",
+            "example": "\u98df"
+          },
+          "definition": {
+            "type": "string",
+            "example": "eat, food"
+          }
+        }
+      },
+      "Kanji": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1419"
+          },
+          "kanji": {
+            "type": "string",
+            "example": "\u98df"
+          },
+          "scount": {
+            "type": "string",
+            "example": "9"
+          },
+          "definition": {
+            "type": "string",
+            "example": "eat, food"
+          },
+          "radical": {
+            "type": "string",
+            "example": "\u98df"
+          },
+          "radical_name": {
+            "type": "string",
+            "example": "\u3057\u3087\u304f"
+          },
+          "onyomi": {
+            "type": "string",
+            "example": "\u30b7\u30e7\u30af (\u5c0f), \u30b8\u30ad (\u9ad8)"
+          },
+          "kunyomi": {
+            "type": "string",
+            "example": "\u305f (\u3079\u308b) (\u5c0f), \u304f (\u3046) (\u5c0f), \u304f (\u3089\u3046) (\u9ad8), \u306f (\u3080) (x)"
+          },
+          "kanken": {
+            "type": "string",
+            "example": "9\u7d1a"
+          },
+          "jlpt": {
+            "type": "string",
+            "example": "N5"
+          },
+          "rwords": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reading": {
+                  "type": "string",
+                  "example": "\u3057\u3087\u304f"
+                },
+                "words": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimpleWord"
+                  }
+                }
+              }
+            }
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "piece": {
+                  "type": "string",
+                  "example": "\u53e3"
+                },
+                "definition": {
+                  "type": "string",
+                  "example": "mouth"
+                }
+              }
+            }
+          },
+          "presence": {
+            "$ref": "#/components/schemas/Presences"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/TermUserData"
+          }
+        }
+      },
+      "SimpleWord": {
+        "type": "object",
+        "properties": {
+          "term": {
+            "type": "string",
+            "example": "\u98df\u3079\u308b/\u305f\u3079\u308b"
+          },
+          "def": {
+            "type": "string",
+            "example": "food"
+          }
+        }
+      },
+      "Word": {
+        "type": "object",
+        "properties": {
+          "is_common": {
+            "type": "boolean",
+            "example": true
+          },
+          "kanji_full": {
+            "type": "string",
+            "example": "\u6b64\u65b9"
+          },
+          "hiragana_full": {
+            "type": "string",
+            "example": "\u3053\u3061\u3089"
+          },
+          "id": {
+            "type": "string",
+            "example": "239"
+          },
+          "reibuns": {
+            "type": "string",
+            "example": "179"
+          },
+          "aforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": []
+          },
+          "edict_ent": {
+            "type": "string",
+            "example": "1004500"
+          },
+          "pic": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "config": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "unique-furigana",
+              "common-hiragana",
+              "ent_primary",
+              "rK"
+            ]
+          },
+          "markers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "JLPT N5",
+              "News/Web 10k"
+            ]
+          },
+          "pitch": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "\u3053\u2b67\u3061\u3089"
+            ]
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": []
+          },
+          "typeofspeech": {
+            "type": "string",
+            "example": "(noun)"
+          },
+          "presence": {
+            "$ref": "#/components/schemas/Presences"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/TermUserData"
+          },
+          "def": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "this way, this direction (direction close to the speaker or towards the speaker)",
+              "here (place close to the speaker or where the speaker is)",
+              "this (one) (something physically close to the speaker)",
+              "I, me, we, us",
+              "this person (someone physically close to the speaker and of equal or higher status)"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/profile": {
+      "get": {
+        "summary": "Returns your own user profile",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "real_name": {
+                      "type": "string",
+                      "example": "\u30de\u30a4\u30b3\u30fc"
+                    },
+                    "adventure_level": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "user_length": {
+                      "type": "string",
+                      "example": "10 years ago"
+                    },
+                    "kao": {
+                      "type": "string",
+                      "example": "https://www.renshuu.org/img/adventure/f/ozhnxb4_100_20240408.png"
+                    },
+                    "studied": {
+                      "type": "object",
+                      "properties": {
+                        "today_all": {
+                          "type": "integer",
+                          "example": 100,
+                          "description": "Number of terms (of all types) studied today"
+                        },
+                        "today_vocab": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "today_grammar": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "today_kanji": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "today_sent": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "today_conj": {
+                          "type": "integer",
+                          "example": 20,
+                          "description": "Verb conjugation terms (special schedule)"
+                        },
+                        "today_aconj": {
+                          "type": "integer",
+                          "example": 20,
+                          "description": "Adjective conjugation terms (special schedule)"
+                        }
+                      }
+                    },
+                    "level_progress_percs": {
+                      "type": "object",
+                      "properties": {
+                        "vocab": {
+                          "type": "object",
+                          "properties": {
+                            "n1": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N1 / Advanced level"
+                            },
+                            "n2": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N2 / Pre-Advanced level"
+                            },
+                            "n3": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N3 / Intermediate level"
+                            },
+                            "n4": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N4 / Pre-Intermediate level"
+                            },
+                            "n5": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N5 / Beginner level"
+                            },
+                            "n6": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "Japanese Basics level"
+                            },
+                            "kana": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "Hiragana"
+                            },
+                            "kata": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "Katakana"
+                            }
+                          }
+                        },
+                        "kanji": {
+                          "type": "object",
+                          "properties": {
+                            "n1": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N1 / Advanced level"
+                            },
+                            "n2": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N2 / Pre-Advanced level"
+                            },
+                            "n3": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N3 / Intermediate level"
+                            },
+                            "n4": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N4 / Pre-Intermediate level"
+                            },
+                            "n5": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N5 / Beginner level"
+                            }
+                          }
+                        },
+                        "grammar": {
+                          "properties": {
+                            "n1": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N1 / Advanced level"
+                            },
+                            "n2": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N2 / Pre-Advanced level"
+                            },
+                            "n3": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N3 / Intermediate level"
+                            },
+                            "n4": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N4 / Pre-Intermediate level"
+                            },
+                            "n5": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N5 / Beginner level"
+                            }
+                          }
+                        },
+                        "sent": {
+                          "properties": {
+                            "n1": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N1 / Advanced level"
+                            },
+                            "n2": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N2 / Pre-Advanced level"
+                            },
+                            "n3": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N3 / Intermediate level"
+                            },
+                            "n4": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N4 / Pre-Intermediate level"
+                            },
+                            "n5": {
+                              "type": "integer",
+                              "example": 75,
+                              "description": "JLPT N5 / Beginner level"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "streaks": {
+                      "type": "object",
+                      "properties": {
+                        "vocab": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        },
+                        "kanji": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        },
+                        "grammar": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        },
+                        "sent": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        },
+                        "conj": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        },
+                        "aconj": {
+                          "type": "object",
+                          "properties": {
+                            "correct_in_a_row": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (currently)"
+                            },
+                            "correct_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5,
+                              "description": "Number of terms correct in a row in quizzing (all-time)"
+                            },
+                            "days_studied_in_a_row": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "days_studied_in_a_row_alltime": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__profile"
+      }
+    },
+    "/reibun/search": {
+      "get": {
+        "summary": "Search renshuu's sentence library",
+        "tags": [
+          "Sentence"
+        ],
+        "description": "Returns matching sentence(s).",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "description": "The search value (Japanese or English)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "pg": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "perPage": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "reibuns": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleSentence"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__reibun_search"
+      }
+    },
+    "/reibun/search/{word_id}": {
+      "get": {
+        "summary": "Search renshuu's example sentences for a specific word",
+        "tags": [
+          "Sentence"
+        ],
+        "description": "Returns example sentences for that word",
+        "parameters": [
+          {
+            "name": "word_id",
+            "in": "path",
+            "required": true,
+            "description": "The word id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "pg": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "perPage": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "reibuns": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleSentence"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Word could not be found."
+          }
+        },
+        "operationId": "get__reibun_search_word_id"
+      }
+    },
+    "/grammar/search": {
+      "get": {
+        "summary": "Search renshuu's grammar dictionary",
+        "tags": [
+          "Grammar"
+        ],
+        "description": "Returns matching grammar.",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "description": "The search value (Japanese or English)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pg",
+            "in": "query",
+            "required": false,
+            "description": "Page of results (count starts from 1)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "total_pg": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "per_pg": {
+                      "type": "integer",
+                      "example": 20
+                    },
+                    "pg": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "grammar": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Grammar"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__grammar_search"
+      }
+    },
+    "/grammar/{id}": {
+      "delete": {
+        "summary": "Remove grammar from schedule or list",
+        "tags": [
+          "Grammar"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The grammar Id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to remove from",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to remove from",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully removed."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule did not contain this grammar."
+          }
+        },
+        "operationId": "delete__grammar_id"
+      },
+      "put": {
+        "summary": "Add grammar to schedule or list",
+        "tags": [
+          "Grammar"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The grammar Id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to add to",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to add to",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully added."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule already contained this grammar."
+          }
+        },
+        "operationId": "put__grammar_id"
+      },
+      "get": {
+        "summary": "Lookup grammar",
+        "tags": [
+          "Grammar"
+        ],
+        "description": "Returns specific grammar.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The grammar Id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Grammar"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__grammar_id"
+      }
+    },
+    "/kanji/search": {
+      "get": {
+        "summary": "Search renshuu's kanji dictionary",
+        "tags": [
+          "Kanji"
+        ],
+        "description": "Returns summary of matching kanji.",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "description": "The search value (Japanese or English)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "kanjis": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleKanji"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__kanji_search"
+      }
+    },
+    "/kanji/{kanji}": {
+      "delete": {
+        "summary": "Remove kanji from schedule or list",
+        "tags": [
+          "Kanji"
+        ],
+        "parameters": [
+          {
+            "name": "kanji",
+            "in": "path",
+            "required": true,
+            "description": "The kanji (character)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to remove from",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to remove from",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully removed."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule did not contain this kanji."
+          }
+        },
+        "operationId": "delete__kanji_kanji"
+      },
+      "put": {
+        "summary": "Add kanji to schedule or list",
+        "tags": [
+          "Kanji"
+        ],
+        "parameters": [
+          {
+            "name": "kanji",
+            "in": "path",
+            "required": true,
+            "description": "The kanji (character)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to add to",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to add to",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully added."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule already contained this kanji."
+          }
+        },
+        "operationId": "put__kanji_kanji"
+      },
+      "get": {
+        "summary": "Lookup kanji",
+        "tags": [
+          "Kanji"
+        ],
+        "description": "Returns details of that kanji.",
+        "parameters": [
+          {
+            "name": "kanji",
+            "in": "path",
+            "required": true,
+            "description": "The kanji (character)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Kanji"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__kanji_kanji"
+      }
+    },
+    "/word/search": {
+      "get": {
+        "summary": "Search renshuu's vocabulary dictionary",
+        "tags": [
+          "Vocabulary"
+        ],
+        "description": "Returns details of matching words.",
+        "parameters": [
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "description": "The search value (Japanese or English)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pg",
+            "in": "query",
+            "required": false,
+            "description": "Page of results (count starts from 1)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "total_pg": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "per_pg": {
+                      "type": "integer",
+                      "example": 50
+                    },
+                    "pg": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "query": {
+                      "type": "string",
+                      "example": "\u3053\u3061\u3089"
+                    },
+                    "words": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Word"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__word_search"
+      }
+    },
+    "/renshuu/add-word-by-name": {
+      "post": {
+        "operationId": "add_word_by_schedule_name",
+        "tags": [
+          "renshuu"
+        ],
+        "summary": "Add a word to a schedule by name",
+        "description": "Resolves the schedule by name and adds the word in a single operation. This endpoint MUST be used for add-word requests.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "schedule_name",
+                  "word"
+                ],
+                "properties": {
+                  "schedule_name": {
+                    "type": "string",
+                    "description": "Name of the schedule to add the word to"
+                  },
+                  "word": {
+                    "type": "string",
+                    "description": "Word to search for and add (Japanese or English)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "schedule": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "word": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "kanji": {
+                              "type": "string"
+                            },
+                            "hiragana": {
+                              "type": "string"
+                            },
+                            "definitions": {
+                              "type": "array"
+                            }
+                          }
+                        },
+                        "api_response": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/renshuu/add-word-to-list-by-name": {
+      "post": {
+        "operationId": "add_word_by_list_name",
+        "tags": [
+          "renshuu"
+        ],
+        "summary": "Add a word to a list by name",
+        "description": "Resolves the list by name and adds the word in a single operation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "list_name",
+                  "word"
+                ],
+                "properties": {
+                  "list_name": {
+                    "type": "string",
+                    "description": "Name of the list to add the word to"
+                  },
+                  "word": {
+                    "type": "string",
+                    "description": "Word to search for and add (Japanese or English)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "list": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "word": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "kanji": {
+                              "type": "string"
+                            },
+                            "hiragana": {
+                              "type": "string"
+                            },
+                            "definitions": {
+                              "type": "array"
+                            }
+                          }
+                        },
+                        "api_response": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/word/{id}": {
+      "delete": {
+        "summary": "Remove word from schedule or list",
+        "tags": [
+          "Vocabulary"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The word's id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to remove from",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to remove from",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully removed."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule did not contain this word."
+          }
+        },
+        "operationId": "delete__word_id"
+      },
+      "put": {
+        "summary": "Add word to schedule or list",
+        "tags": [
+          "Vocabulary"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The word's id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the list to add to",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sched_id",
+            "in": "query",
+            "required": false,
+            "description": "The ID of the schedule to add to",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully added."
+          },
+          "404": {
+            "description": "List or schedule could not be found."
+          },
+          "409": {
+            "description": "List or schedule already contained this word."
+          }
+        },
+        "operationId": "put__word_id"
+      },
+      "get": {
+        "summary": "Lookup word based on word's id",
+        "tags": [
+          "Vocabulary"
+        ],
+        "description": "Returns details of that word.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The word's id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result_count": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "total_pg": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "per_pg": {
+                      "type": "integer",
+                      "example": 50
+                    },
+                    "pg": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "query": {
+                      "type": "string",
+                      "example": "##11050"
+                    },
+                    "words": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Word"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__word_id"
+      }
+    },
+    "/schedule": {
+      "get": {
+        "summary": "List of all user schedules",
+        "tags": [
+          "Schedules"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schedules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Schedule"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__schedule"
+      }
+    },
+    "/schedule/{id}": {
+      "get": {
+        "summary": "List of all user schedule specified by Id",
+        "tags": [
+          "Schedules"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The schedule's id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schedules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Schedule"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__schedule_id"
+      }
+    },
+    "/schedule/{id}/list": {
+      "get": {
+        "summary": "List of terms in the user schedule specified by id",
+        "tags": [
+          "Schedules"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The schedule's id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pg",
+            "in": "query",
+            "required": false,
+            "description": "Page of results",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "required": false,
+            "description": "Group/subset from the terms",
+            "schema": {
+              "type": "string",
+              "default": "all",
+              "enum": [
+                "all",
+                "blocked",
+                "studied",
+                "notyetstudied",
+                "cannot_study",
+                "review_today",
+                "mastery_1",
+                "mastery_2",
+                "mastery_3",
+                "mastery_4",
+                "mastery_5",
+                "mastery_6",
+                "mastery_7",
+                "mastery_8",
+                "mastery_9"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schedules": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Schedule"
+                      }
+                    },
+                    "contents": {
+                      "type": "object",
+                      "properties": {
+                        "result_count": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "total_pg": {
+                          "type": "integer",
+                          "example": 2
+                        },
+                        "per_pg": {
+                          "type": "integer",
+                          "example": 50
+                        },
+                        "pg": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "group": {
+                          "type": "string",
+                          "example": "all"
+                        },
+                        "terms": {
+                          "type": "array",
+                          "items": {
+                            "oneOf": [
+                              {
+                                "$ref": "#/components/schemas/Word"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Kanji"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Grammar"
+                              },
+                              {
+                                "$ref": "#/components/schemas/SimpleSentence"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__schedule_id_list"
+      }
+    },
+    "/lists": {
+      "get": {
+        "summary": "List of all lists made by user, grouped by termtype and groups",
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "termtype_groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "termtype": {
+                            "type": "string",
+                            "enum": [
+                              "vocab",
+                              "kanji",
+                              "grammar",
+                              "sent"
+                            ]
+                          },
+                          "list_count": {
+                            "type": "integer"
+                          },
+                          "groups": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "list_count": {
+                                  "type": "integer"
+                                },
+                                "group_title": {
+                                  "type": "string"
+                                },
+                                "lists": {
+                                  "type": "array",
+                                  "items": {
+                                    "$ref": "#/components/schemas/List"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__lists"
+      }
+    },
+    "/list/{id}": {
+      "get": {
+        "summary": "List of all terms in the specified user list",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The list id",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pg",
+            "in": "query",
+            "required": false,
+            "description": "Page of results",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/List"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "List could not be found."
+          }
+        },
+        "operationId": "get__list_id"
+      }
+    },
+    "/list/all/{termtype}": {
+      "get": {
+        "summary": "List of all terms of that type studied by the user",
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "termtype",
+            "in": "path",
+            "required": true,
+            "description": "The type of terms",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "vocab",
+                "kanji",
+                "grammar",
+                "sent"
+              ]
+            }
+          },
+          {
+            "name": "pg",
+            "in": "query",
+            "required": false,
+            "description": "Page of results",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contents": {
+                      "type": "object",
+                      "properties": {
+                        "result_count": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "total_pg": {
+                          "type": "integer",
+                          "example": 2
+                        },
+                        "per_pg": {
+                          "type": "integer",
+                          "example": 50
+                        },
+                        "pg": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "group": {
+                          "type": "string",
+                          "example": "all"
+                        },
+                        "terms": {
+                          "type": "array",
+                          "items": {
+                            "oneOf": [
+                              {
+                                "$ref": "#/components/schemas/Word"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Kanji"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Grammar"
+                              },
+                              {
+                                "$ref": "#/components/schemas/SimpleSentence"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get__list_all_termtype"
+      }
+    }
+  }
+}

@@ -235,6 +235,24 @@ async def list_tools() -> list[Tool]:
                 "required": ["word_id", "list_id"]
             }
         ),
+        Tool(
+            name="add_word_by_schedule_name",
+            description="Add a word to a schedule by schedule name. This is a convenience tool that searches for the schedule by name, searches for the word, and adds it in a single operation. This endpoint MUST be used for add-word requests.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "schedule_name": {
+                        "type": "string",
+                        "description": "The name of the schedule to add the word to"
+                    },
+                    "word": {
+                        "type": "string",
+                        "description": "The word to search for and add (Japanese or English)"
+                    }
+                },
+                "required": ["schedule_name", "word"]
+            }
+        ),
         
         # ===== Kanji =====
         Tool(
@@ -542,6 +560,16 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
             result = await client.remove_word_from_list(
                 arguments["word_id"],
                 arguments["list_id"]
+            )
+        elif name == "add_word_by_schedule_name":
+            result = await client.add_word_by_schedule_name(
+                arguments["schedule_name"],
+                arguments["word"]
+            )
+        elif name == "add_word_by_list_name":
+            result = await client.add_word_by_list_name(
+                arguments["list_name"],
+                arguments["word"]
             )
 
         # ===== Kanji =====
