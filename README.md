@@ -1,4 +1,7 @@
-Usage with Open WebUI:
+## Renshuu MCP
+#### Renshuu MCP is a custom MCP server designed to allow LLMs to call the Renshuu API on your behalf, performing actions such as searching the Renshuu dictionary, adding a word to your list, giving your sample sentences of words from your list, etc.
+
+## Usage with Open WebUI:
 1. `pip install -r requirements.txt` in your virtual env (or global if you want)
 2. configure your environment variables by filling in your Renshuu keys and renaming the env file to .env
 3. `export $(grep -v '^#' .env | xargs)` or however you want to set the environment variables
